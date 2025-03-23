@@ -61,6 +61,11 @@ trigger:
   event_type: state_changed
   event_data:
     device_id: !input 'button_id'
+    command: "single"
+- platform: event
+  event_type: state_changed
+  event_data:
+    device_id: !input 'button_id'
     command: "toggle"
 - platform: event
   event_type: state_changed
