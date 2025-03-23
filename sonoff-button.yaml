@@ -58,17 +58,17 @@ mode: !input 'mode'
 max_exceeded: silent
 trigger:
 - platform: event
-  event_type: zha_event
+  event_type: state_changed
   event_data:
     device_id: !input 'button_id'
     command: "toggle"
 - platform: event
-  event_type: zha_event
+  event_type: state_changed
   event_data:
     device_id: !input 'button_id'
     command: "on"
 - platform: event
-  event_type: zha_event
+  event_type: state_changed
   event_data:
     device_id: !input 'button_id'
     command: "off"
