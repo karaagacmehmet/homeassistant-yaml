@@ -15,7 +15,6 @@ blueprint:
           - manufacturer: SONOFF
             model: SNZB-01P
           multiple: false
-
 trigger:
   platform: event
   event_type: state_changed
