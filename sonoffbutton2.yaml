@@ -6,8 +6,15 @@ blueprint:
     sonoff_button:
       name: Sonoff Button
       selector:
-        entity:
-          domain: sensor
+        device:
+          filter:
+          - manufacturer: eWeLink
+            model: WB01
+          - manufacturer: eWeLink
+            model: SNZB-01P
+          - manufacturer: SONOFF
+            model: SNZB-01P
+          multiple: false
 
 trigger:
   platform: event
