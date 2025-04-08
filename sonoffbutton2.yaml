@@ -8,7 +8,6 @@ blueprint:
       selector:
         entity:
           domain: sensor
-          entity_id: sensor.sonoff_a4b001cec7
 
 trigger:
   platform: event
