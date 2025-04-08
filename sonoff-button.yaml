@@ -12,8 +12,13 @@ blueprint:
       selector:
         device:
           filter:
-            manufacturer: SONOFF
-            model: SNZB-01P  
+          - manufacturer: eWeLink
+            model: WB01
+          - manufacturer: eWeLink
+            model: SNZB-01P
+          - manufacturer: SONOFF
+            model: SNZB-01P
+          multiple: false
     single_press:
       name: Single press
       description: Action to run on single press
