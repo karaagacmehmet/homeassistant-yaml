@@ -1,6 +1,6 @@
 blueprint:
-  name: ZHA - Sonoff SNZB-01
-  description: 'Perform actions with the Sonoff SNZB-01 Button. You can set functions for single press, double press and hold. This allows you to assign, e.g., a scene or anything else.'
+  name: Sonoff SNZB-01P Button Controls- Only Use For This Type of Buttons
+  description: 'Perform actions with the Sonoff SNZB-01P Button. You can set functions for single press, double press and hold. This allows you to assign, e.g., a scene or anything else.'
   domain: automation
   input:
     remote:
