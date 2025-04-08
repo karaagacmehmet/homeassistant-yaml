@@ -1,0 +1,25 @@
+blueprint:
+  name: Sonoff Button State Change
+  description: Detects state changes for Sonoff button 2
+  domain: automation
+  input:
+    sonoff_button:
+      name: Sonoff Button
+      selector:
+        entity:
+          domain: sensor
+          entity_id: sensor.sonoff_a4b001cec7
+
+trigger:
+  platform: event
+  event_type: state_changed
+  event_data:
+    entity_id: !input sonoff_button
+
+condition: []
+
+action:
+  - service: notify.notify
+    data:
+      message: >
+        Sonoff button 2 state changed from {{ trigger.event.data.old_state.state }} to {{ trigger.event.data.new_state.state }}
