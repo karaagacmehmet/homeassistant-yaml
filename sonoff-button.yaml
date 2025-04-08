@@ -1,23 +1,14 @@
 blueprint:
   name: ZHA - Sonoff SNZB-01
-  description: 'Perform actions with the Sonoff SNZB-01 Button.
-    You can set functions for single press, double press and hold. This allows you to assign, 
-    e.g., a scene or anything else.'
-
+  description: 'Perform actions with the Sonoff SNZB-01 Button. You can set functions for single press, double press and hold. This allows you to assign, e.g., a scene or anything else.'
   domain: automation
   input:
     remote:
       name: Remote
       description: Sonoff Button to use
       selector:
-        device:
-          filter:
-          - manufacturer: eWeLink
-            model: WB01
-          - manufacturer: eWeLink
-            model: SNZB-01P
-          - manufacturer: SONOFF
-            model: SNZB-01P
+        entity:
+          domain: sensor
           multiple: false
     single_press:
       name: Single press
@@ -40,28 +31,21 @@ blueprint:
 mode: restart
 max_exceeded: silent
 trigger:
-- platform: event
-  event_type: state_changed
-  event_data:
-    device_id: !input 'remote'
+  - platform: event
+    event_type: state_changed
+    event_data:
+      entity_id: !input remote
 action:
-- variables:
-    command: '{{ trigger.event.data.command }}'
-    cluster_id: '{{ trigger.event.data.cluster_id }}'
-    endpoint_id: '{{ trigger.event.data.endpoint_id }}'
-- choose:
-  - conditions:
-    - '{{ command == "toggle" }}'
-    - '{{ cluster_id == 6 }}'
-    - '{{ endpoint_id == 1 }}'
-    sequence: !input 'single_press'
-  - conditions:
-    - '{{ command == "on" }}'
-    - '{{ cluster_id == 6 }}'
-    - '{{ endpoint_id == 1 }}'
-    sequence: !input 'double_press'
-  - conditions:
-    - '{{ command == "off" }}'
-    - '{{ cluster_id == 6 }}'
-    - '{{ endpoint_id == 1 }}'
-    sequence: !input 'hold'
+  - variables:
+      old_state: '{{ trigger.event.data.old_state.state }}'
+      new_state: '{{ trigger.event.data.new_state.state }}'
+  - choose:
+      - conditions:
+          - '{{ old_state == "single" and new_state == "" }}'
+        sequence: !input 'single_press'
+      - conditions:
+          - '{{ old_state == "double" and new_state == "" }}'
+        sequence: !input 'double_press'
+      - conditions:
+          - '{{ old_state == "hold" and new_state == "" }}'
+        sequence: !input 'hold'
