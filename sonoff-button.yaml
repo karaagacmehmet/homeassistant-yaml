@@ -13,9 +13,9 @@ blueprint:
         device:
           integration: zha
           -manufacturer: eWeLink
-          model: WB01
-		  - manufacturer: SONOFF
-            model: SNZB-01P
+           model: WB01
+	 - manufacturer: SONOFF
+           model: SNZB-01P
     single_press:
       name: Single press
       description: Action to run on single press
