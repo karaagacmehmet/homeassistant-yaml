@@ -11,11 +11,14 @@ blueprint:
       description: Sonoff Button to use
       selector:
         device:
-          integration: zha
-          -manufacturer: eWeLink
-           model: WB01
-	 - manufacturer: SONOFF
-           model: SNZB-01P
+          filter:
+          - manufacturer: eWeLink
+            model: WB01
+          - manufacturer: eWeLink
+            model: SNZB-01P
+          - manufacturer: SONOFF
+            model: SNZB-01P
+          multiple: false
     single_press:
       name: Single press
       description: Action to run on single press
