@@ -1,93 +1,65 @@
 blueprint:
-  name: Sonoff Zigbee Button
-  description: Setup actions for three functions of the SONOFF Zigbee button with
-    Press, Double Press, and Hold.
+  name: ZHA - Sonoff SNZB-01
+  description: 'Perform actions with the Sonoff SNZB-01 Button.
+    You can set functions for single press, double press and hold. This allows you to assign, 
+    e.g., a scene or anything else.'
+
   domain: automation
   input:
-    button_id:
-      name: Button
-      description: The button to configure.
+    remote:
+      name: Remote
+      description: Sonoff Button to use
       selector:
         device:
-          filter:
-          - manufacturer: eWeLink
-            model: WB01
-          - manufacturer: eWeLink
+          integration: zha
+          -manufacturer: eWeLink
+          model: WB01
+		  - manufacturer: SONOFF
             model: SNZB-01P
-          - manufacturer: SONOFF
-            model: SNZB-01P
-          multiple: false
-    mode:
-      name: Automation mode
-      description: The automation’s mode configuration option controls what happens when the automation is triggered while the actions
-        are still running from a previous trigger (see [Automation modes](https://www.home-assistant.io/docs/automation/modes/)).
-      default: single
-      selector:
-        select:
-          options:
-            - single
-            - restart
-            - queued
-            - parallel
-    press_action:
-      name: Press Action
-      description: Action to perform on Press.
+    single_press:
+      name: Single press
+      description: Action to run on single press
       default: []
       selector:
         action: {}
-    double_press_action:
-      name: Double Press Action
-      description: Action to perform on Double Press.
+    double_press:
+      name: Double press
+      description: Action to run on double press
       default: []
       selector:
         action: {}
-    hold_action:
-      name: Hold Action
-      description: Action to perform on Hold.
+    hold:
+      name: Hold
+      description: Action to run on hold
       default: []
       selector:
         action: {}
-  source_url: https://github.com/karaagacmehmet/homeassistant-yaml/blob/main/sonoff-button.yaml
-variables:
-  button_id: !input 'button_id'
-  press_action: !input 'press_action'
-  double_press_action: !input 'double_press_action'
-  hold_action: !input 'hold_action'
-  mode: !input 'mode'
-mode: !input 'mode'
+  source_url: https://gist.github.com/seamus65/2be0f8c665ac8c1e011fbd1a0937f9e1
+mode: restart
 max_exceeded: silent
 trigger:
 - platform: event
-  event_type: state_changed
+  event_type: zha_event
   event_data:
-    device_id: !input 'button_id'
-    command: "single"
-- platform: event
-  event_type: state_changed
-  event_data:
-    device_id: !input 'button_id'
-    command: "toggle"
-- platform: event
-  event_type: state_changed
-  event_data:
-    device_id: !input 'button_id'
-    command: "on"
-- platform: event
-  event_type: state_changed
-  event_data:
-    device_id: !input 'button_id'
-    command: "off"
+    device_id: !input 'remote'
 action:
+- variables:
+    command: '{{ trigger.event.data.command }}'
+    cluster_id: '{{ trigger.event.data.cluster_id }}'
+    endpoint_id: '{{ trigger.event.data.endpoint_id }}'
 - choose:
   - conditions:
-    - condition: template
-      value_template: '{{ trigger.event.data.command == "toggle" }}'
-    sequence: !input 'press_action'
+    - '{{ command == "toggle" }}'
+    - '{{ cluster_id == 6 }}'
+    - '{{ endpoint_id == 1 }}'
+    sequence: !input 'single_press'
   - conditions:
-    - condition: template
-      value_template: '{{ trigger.event.data.command == "on" }}'
-    sequence: !input 'double_press_action'
+    - '{{ command == "on" }}'
+    - '{{ cluster_id == 6 }}'
+    - '{{ endpoint_id == 1 }}'
+    sequence: !input 'double_press'
   - conditions:
-    - condition: template
-      value_template: '{{ trigger.event.data.command == "off" }}'
-    sequence: !input 'hold_action'
+    - '{{ command == "off" }}'
+    - '{{ cluster_id == 6 }}'
+    - '{{ endpoint_id == 1 }}'
+    sequence: !input 'hold'
