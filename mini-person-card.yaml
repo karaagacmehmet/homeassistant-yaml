@@ -17,9 +17,8 @@ cards:
       align-items: start
     cards:
       - type: tile
-        entity: person.cavis
+        entity: person.mehmet
         show_entity_picture: true
-        name: Caviş 💙
         vertical: false
         state_content:
           - state
@@ -55,7 +54,7 @@ cards:
           justify-items: end
         cards:
           - type: custom:button-card
-            entity: sensor.cavidans_iphone_battery_level
+            entity: sensor.2109119dg_battery_level
             show_name: false
             show_icon: true
             show_state: true
@@ -83,60 +82,21 @@ cards:
                 - line-height: 1
                 - white-space: nowrap
           - type: custom:button-card
+            entity: script.mehmet_notify_send
             icon: mdi:email-outline
             show_name: false
             tap_action:
-              action: fire-dom-event
-              browser_mod:
-                command: popup
-                title: Mehmet'e mesaj
-                content:
-                  type: vertical-stack
-                  cards:
-                    - type: entities
-                      entities:
-                        - entity: input_text.mehmet_message
-                          name: Mesaj
-                    - type: horizontal-stack
-                      cards:
-                        - type: custom:button-card
-                          name: Gönder
-                          icon: mdi:send
-                          layout: icon_name
-                          styles:
-                            card:
-                              - border-radius:12px
-                              - padding:8px 12px
-                          tap_action:
-                            action: fire-dom-event
-                            browser_mod:
-                              command: sequence
-                              sequence:
-                                - command: call-service
-                                  service: notify.mobile_app_mehmet_phone
-                                  data:
-                                    title: HA
-                                    message: |
-                                      [[[
-                                        const s = states['input_text.mehmet_message']?.state || '';
-                                        return s || 'Mesaj yok';
-                                      ]]]
-                                - command: call-service
-                                  service: input_text.set_value
-                                  data:
-                                    entity_id: input_text.mehmet_message
-                                    value: ""
-                                - command: close_popup
-                        - type: custom:button-card
-                          name: Kapat
-                          icon: mdi:close
-                          layout: icon_name
-                          tap_action:
-                            action: call-service
-                            service: browser_mod.close_popup
+              action: more-info
+            hold_action:
+              action: call-service
+              service: script.mehmet_notify_send
+            double_tap_action:
+              action: call-service
+              service: script.mehmet_notify_send
             card_mod:
-              style: |
-                :host { justify-self: end !important; }   # sağ kenara sabitle
+              style: >
+                :host { justify-self: end !important; }   /* sağ kenara sabitle
+                */
             styles:
               card:
                 - border: none
