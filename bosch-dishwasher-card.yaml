@@ -1,0 +1,445 @@
+type: custom:stack-in-card
+card_mod:
+  style: |
+    ha-card{padding:7px 1px 7px 3px}
+cards:
+  - type: vertical-stack
+    cards:
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: template
+            icon: mdi:power
+            content: ""
+            icon_color: >
+              {{ 'green' if is_state('switch.bulasik_makinesi_power','on') else
+              'red' }}
+            tap_action:
+              action: call-service
+              service: switch.toggle
+              target:
+                entity_id: switch.bulasik_makinesi_power
+          - type: template
+            icon: mdi:water-boiler
+            content: 70°
+            icon_color: >
+              {{ 'green' if
+              is_state('select.bulasik_makinesi_selected_programme','dishcare_dishwasher_program_intensiv_70')
+              else 'grey' }}
+            tap_action:
+              action: call-service
+              service: select.select_option
+              target:
+                entity_id: select.bulasik_makinesi_selected_programme
+              data:
+                option: dishcare_dishwasher_program_intensiv_70
+            card_mod:
+              style: >
+                :host{
+                  {% if is_state('select.bulasik_makinesi_selected_programme','dishcare_dishwasher_program_intensiv_70') %}
+                    --chip-background: rgba(var(--rgb-green), .12);
+                    --chip-border-color: rgba(var(--rgb-green), .22);
+                    --chip-border-width: 1px;
+                    --chip-padding: 6px;
+                  {% endif %}
+                }
+
+                {% if
+                is_state('select.bulasik_makinesi_selected_programme','dishcare_dishwasher_program_intensiv_70')
+                %}
+                  .chip{ background: rgba(var(--rgb-green), .12) !important; border-color: rgba(var(--rgb-green), .22) !important; }
+                {% endif %}
+          - type: template
+            icon: mdi:leaf
+            content: Eco 50°
+            icon_color: >
+              {{ 'green' if
+              is_state('select.bulasik_makinesi_selected_programme','dishcare_dishwasher_program_eco_50')
+              else 'grey' }}
+            tap_action:
+              action: call-service
+              service: select.select_option
+              target:
+                entity_id: select.bulasik_makinesi_selected_programme
+              data:
+                option: dishcare_dishwasher_program_eco_50
+            card_mod:
+              style: >
+                :host{
+                  {% if is_state('select.bulasik_makinesi_selected_programme','dishcare_dishwasher_program_eco_50') %}
+                    --chip-background: rgba(var(--rgb-green), .12);
+                    --chip-border-color: rgba(var(--rgb-green), .22);
+                    --chip-border-width: 1px;
+                    --chip-padding: 6px;
+                  {% endif %}
+                }
+
+                {% if
+                is_state('select.bulasik_makinesi_selected_programme','dishcare_dishwasher_program_eco_50')
+                %}
+                  .chip{ background: rgba(var(--rgb-green), .12) !important; border-color: rgba(var(--rgb-green), .22) !important; }
+                {% endif %}
+          - type: template
+            icon: mdi:flash
+            content: 65°
+            icon_color: >
+              {{ 'green' if
+              is_state('select.bulasik_makinesi_selected_programme','dishcare_dishwasher_program_quick_65')
+              else 'grey' }}
+            tap_action:
+              action: call-service
+              service: select.select_option
+              target:
+                entity_id: select.bulasik_makinesi_selected_programme
+              data:
+                option: dishcare_dishwasher_program_quick_65
+            card_mod:
+              style: >
+                :host{
+                  {% if is_state('select.bulasik_makinesi_selected_programme','dishcare_dishwasher_program_quick_65') %}
+                    --chip-background: rgba(var(--rgb-green), .12);
+                    --chip-border-color: rgba(var(--rgb-green), .22);
+                    --chip-border-width: 1px;
+                    --chip-padding: 6px;
+                  {% endif %}
+                }
+
+                {% if
+                is_state('select.bulasik_makinesi_selected_programme','dishcare_dishwasher_program_quick_65')
+                %}
+                  .chip{ background: rgba(var(--rgb-green), .12) !important; border-color: rgba(var(--rgb-green), .22) !important; }
+                {% endif %}
+          - type: template
+            icon: mdi:flash
+            content: 45°
+            icon_color: >
+              {{ 'green' if
+              is_state('select.bulasik_makinesi_selected_programme','dishcare_dishwasher_program_quick_45')
+              else 'grey' }}
+            tap_action:
+              action: call-service
+              service: select.select_option
+              target:
+                entity_id: select.bulasik_makinesi_selected_programme
+              data:
+                option: dishcare_dishwasher_program_quick_45
+            card_mod:
+              style: >
+                :host{
+                  {% if is_state('select.bulasik_makinesi_selected_programme','dishcare_dishwasher_program_quick_45') %}
+                    --chip-background: rgba(var(--rgb-green), .12);
+                    --chip-border-color: rgba(var(--rgb-green), .22);
+                    --chip-border-width: 1px;
+                    --chip-padding: 6px;
+                  {% endif %}
+                }
+
+                {% if
+                is_state('select.bulasik_makinesi_selected_programme','dishcare_dishwasher_program_quick_45')
+                %}
+                  .chip{ background: rgba(var(--rgb-green), .12) !important; border-color: rgba(var(--rgb-green), .22) !important; }
+                {% endif %}
+          - type: template
+            icon: mdi:auto-fix
+            content: ""
+            icon_color: >
+              {{ 'green' if
+              is_state('select.bulasik_makinesi_selected_programme','dishcare_dishwasher_program_machine_care')
+              else 'grey' }}
+            tap_action:
+              action: call-service
+              service: select.select_option
+              target:
+                entity_id: select.bulasik_makinesi_selected_programme
+              data:
+                option: dishcare_dishwasher_program_machine_care
+            card_mod:
+              style: >
+                :host{
+                  {% if is_state('select.bulasik_makinesi_selected_programme','dishcare_dishwasher_program_machine_care') %}
+                    --chip-background: rgba(var(--rgb-green), .12);
+                    --chip-border-color: rgba(var(--rgb-green), .22);
+                    --chip-border-width: 1px;
+                    --chip-padding: 6px;
+                  {% endif %}
+                }
+
+                {% if
+                is_state('select.bulasik_makinesi_selected_programme','dishcare_dishwasher_program_machine_care')
+                %}
+                  .chip{ background: rgba(var(--rgb-green), .12) !important; border-color: rgba(var(--rgb-green), .22) !important; }
+                {% endif %}
+        card_mod:
+          style: >
+            ha-card{padding:0;background:transparent;box-shadow:none;border:none}
+
+            .chips{gap:2px!important;align-items:center;flex-wrap:nowrap!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch}
+
+            .chips::-webkit-scrollbar{display:none}
+
+            .chips mushroom-chip{flex:0 0 auto!important}
+
+            .chips mushroom-chip .chip{min-width:unset!important;padding:0
+            3px!important}
+
+            mushroom-chip{--chip-border-radius:8px;--chip-box-shadow:none}
+
+            mushroom-shape-icon{--icon-size:13px}
+
+            mushroom-chip .chip-content{font-size:.68rem;white-space:nowrap}
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: conditional
+            conditions:
+              - entity: switch.bulasik_makinesi_power
+                state: "on"
+              - entity: sensor.bulasik_makinesi_operation_state
+                state: run
+            chip:
+              type: template
+              icon: mdi:stop
+              content: ""
+              icon_color: red
+              tap_action:
+                action: call-service
+                service: button.press
+                target:
+                  entity_id: button.bulasik_makinesi_stop_programme
+          - type: conditional
+            conditions:
+              - entity: switch.bulasik_makinesi_power
+                state: "on"
+              - entity: sensor.bulasik_makinesi_operation_state
+                state: pause
+            chip:
+              type: template
+              icon: mdi:stop
+              content: ""
+              icon_color: red
+              tap_action:
+                action: call-service
+                service: button.press
+                target:
+                  entity_id: button.bulasik_makinesi_stop_programme
+          - type: conditional
+            conditions:
+              - entity: switch.bulasik_makinesi_power
+                state: "on"
+              - entity: sensor.bulasik_makinesi_door
+                state: closed
+              - entity: sensor.bulasik_makinesi_operation_state
+                state_not: run
+              - entity: sensor.bulasik_makinesi_operation_state
+                state_not: pause
+            chip:
+              type: template
+              icon: mdi:play
+              content: ""
+              icon_color: green
+              tap_action:
+                action: call-service
+                service: script.bulasik_makinesi_start_with_selected
+          - type: conditional
+            conditions:
+              - entity: switch.bulasik_makinesi_power
+                state_not: "on"
+            chip:
+              type: template
+              icon: mdi:blank
+              content: ""
+              card_mod:
+                style: >
+                  .chip{width:28px;padding:0;background:transparent!important;border:none!important;box-shadow:none!important}
+
+                  .shape, ha-icon, ha-svg-icon{display:none!important}
+
+                  .chip *{opacity:0}
+          - type: conditional
+            conditions:
+              - entity: switch.bulasik_makinesi_power
+                state: "on"
+              - entity: sensor.bulasik_makinesi_door
+                state_not: closed
+              - entity: sensor.bulasik_makinesi_operation_state
+                state_not: run
+              - entity: sensor.bulasik_makinesi_operation_state
+                state_not: pause
+            chip:
+              type: template
+              icon: mdi:blank
+              content: ""
+              card_mod:
+                style: >
+                  .chip{width:28px;padding:0;background:transparent!important;border:none!important;box-shadow:none!important}
+
+                  .shape, ha-icon, ha-svg-icon{display:none!important}
+
+                  .chip *{opacity:0}
+          - type: template
+            icon: mdi:shield-lock
+            content: Çocuk Kl.
+            icon_color: >
+              {{ 'green' if is_state('switch.bulasik_makinesi_child_lock','on')
+              else 'grey' }}
+            tap_action:
+              action: call-service
+              service: switch.toggle
+              target:
+                entity_id: switch.bulasik_makinesi_child_lock
+            card_mod:
+              style: |
+                :host{
+                  {% if is_state('switch.bulasik_makinesi_child_lock','on') %}
+                    --chip-background: rgba(var(--rgb-green), .12);
+                    --chip-border-color: rgba(var(--rgb-green), .22);
+                    --chip-border-width: 1px;
+                  {% endif %}
+                }
+                {% if is_state('switch.bulasik_makinesi_child_lock','on') %}
+                  .chip{ background: rgba(var(--rgb-green), .12) !important; border-color: rgba(var(--rgb-green), .22) !important; }
+                {% endif %}
+          - type: template
+            icon: mdi:shimmer
+            content: Hijyen
+            icon_color: >
+              {{ 'green' if is_state('switch.bulasik_makinesi_hygiene','on')
+              else 'grey' }}
+            tap_action:
+              action: call-service
+              service: switch.toggle
+              target:
+                entity_id: switch.bulasik_makinesi_hygiene
+            card_mod:
+              style: |
+                :host{
+                  {% if is_state('switch.bulasik_makinesi_hygiene','on') %}
+                    --chip-background: rgba(var(--rgb-green), .12);
+                    --chip-border-color: rgba(var(--rgb-green), .22);
+                    --chip-border-width: 1px;
+                  {% endif %}
+                }
+                {% if is_state('switch.bulasik_makinesi_hygiene','on') %}
+                  .chip{ background: rgba(var(--rgb-green), .12) !important; border-color: rgba(var(--rgb-green), .22) !important; }
+                {% endif %}
+          - type: template
+            icon: mdi:weight
+            content: 1⁄2
+            icon_color: >
+              {{ 'green' if is_state('switch.bulasik_makinesi_half_load','on')
+              else 'grey' }}
+            tap_action:
+              action: call-service
+              service: switch.toggle
+              target:
+                entity_id: switch.bulasik_makinesi_half_load
+            card_mod:
+              style: |
+                :host{
+                  {% if is_state('switch.bulasik_makinesi_half_load','on') %}
+                    --chip-background: rgba(var(--rgb-green), .12);
+                    --chip-border-color: rgba(var(--rgb-green), .22);
+                    --chip-border-width: 1px;
+                  {% endif %}
+                }
+                {% if is_state('switch.bulasik_makinesi_half_load','on') %}
+                  .chip{ background: rgba(var(--rgb-green), .12) !important; border-color: rgba(var(--rgb-green), .22) !important; }
+                {% endif %}
+        card_mod:
+          style: >
+            ha-card{padding:0;background:transparent;box-shadow:none;border:none}
+
+            .chips{gap:2px!important;align-items:center;flex-wrap:wrap}
+
+            mushroom-chip{--chip-border-radius:8px;--chip-box-shadow:none}
+
+            mushroom-shape-icon{--icon-size:13px}
+
+            mushroom-chip .chip{padding:0 4px!important}
+
+            mushroom-chip .chip-content{font-size:.68rem;white-space:nowrap}
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: template
+            icon: >
+              {% set st =
+              states('sensor.bulasik_makinesi_operation_state')|lower %} {% set
+              ic = {
+                'inactive':'mdi:power-standby',
+                'ready':'mdi:checkbox-blank-circle-outline',
+                'delayedstart':'mdi:clock-outline',
+                'run':'mdi:progress-clock',
+                'pause':'mdi:pause',
+                'actionrequired':'mdi:alert',
+                'finished':'mdi:check-circle',
+                'error':'mdi:alert-circle',
+                'aborting':'mdi:stop-circle'
+              } %} {{ ic.get(st,'mdi:help-circle') }}
+            content: >
+              {% set st =
+              states('sensor.bulasik_makinesi_operation_state')|lower %} {% set
+              map = {
+                'inactive':'Kapalı','ready':'Hazır','delayedstart':'Zamanlı',
+                'run':'','pause':'Duraklatıldı','actionrequired':'İşlem Gerekli',
+                'finished':'Bitti','error':'Hata','aborting':'İptal ediliyor'
+              } %} {% set text = map.get(st, st|title) %} {% set rem =
+              states('sensor.ui_dishwasher_remaining_text') %} {% if st == 'run'
+              and rem not in ['unknown','unavailable',''] and rem != '' %}
+                {{ text }}{{ rem }}
+              {% else %}
+                {{ text }}
+              {% endif %}
+            icon_color: >
+              {% set st =
+              states('sensor.bulasik_makinesi_operation_state')|lower %} {% if
+              st == 'run' %}blue {% elif st == 'pause' %}amber {% elif st ==
+              'finished' %}green {% elif st in ['error','aborting'] %}red {%
+              elif st == 'delayedstart' %}teal {% else %}grey{% endif %}
+          - type: template
+            icon: mdi:door
+            content: Kapak
+            icon_color: >
+              {% set d = states('sensor.bulasik_makinesi_door') | lower %} {% if
+              d == 'open' %}red{% elif d == 'closed' %}green{% else %}grey{%
+              endif %}
+          - type: template
+            icon: mdi:wifi
+            content: ""
+            icon_color: >
+              {{ 'green' if
+              is_state('binary_sensor.bulasik_makinesi_connectivity','on') else
+              'red' }}              
+          - type: template
+            icon: mdi:remote
+            content: ""
+            icon_color: >
+              {{ 'green' if
+              is_state('binary_sensor.bulasik_makinesi_remote_control','on')
+              else 'grey' }}
+          - type: template
+            icon: mdi:clock-start
+            content: ""
+            icon_color: >
+              {{ 'green' if
+              is_state('binary_sensor.bulasik_makinesi_remote_start','on') else
+              'grey' }}
+            tap_action:
+              action: more-info
+              entity: binary_sensor.bulasik_makinesi_remote_start
+            hold_action:
+              action: none
+            double_tap_action:
+              action: none
+        card_mod:
+          style: >
+            ha-card{padding:0;background:transparent;box-shadow:none;border:none}
+
+            .chips{gap:1px!important;align-items:center;flex-wrap:nowrap!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch}
+
+            .chips::-webkit-scrollbar{display:none}
+
+            mushroom-chip{--chip-border-radius:8px;--chip-box-shadow:none;}
+
+            mushroom-shape-icon{--icon-size:12px}
+
+            mushroom-chip .chip{padding:0 3px!important}
+
+            mushroom-chip .chip-content{font-size:.63rem;white-space:nowrap}
