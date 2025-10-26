@@ -58,12 +58,12 @@
       if (this._built) return;
       this._root.innerHTML = `
         <style>
-          ha-card{ padding-top:1px; }
+          ha-card{ padding-top:2px; }
           .wrap{ display:flex; align-items:center; gap:8px; }
 
           /* Left big icon area */
           .left{
-            width:34px; min-height:58px; padding-left:2px;
+            width:34px; min-height:54px; padding-left:2px;
             border:none; background:none; box-shadow:none;
             display:flex; align-items:center; justify-content:center;
           }
