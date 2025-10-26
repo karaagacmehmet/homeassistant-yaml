@@ -2,7 +2,7 @@ type: custom:stack-in-card
 card_mod:
   style: |
     ha-card {
-      padding: 9px;
+      padding: 10px;
     }
 grid_options:
   columns: 6
@@ -24,9 +24,9 @@ cards:
             - background: none
             - box-shadow: none
           icon:
-            - width: 28px
-            - height: 24px
-        icon: >
+            - width: 30px
+            - height: 30px
+        icon: |
           [[[ 
             const s = (entity.state || '').toLowerCase();
             const isOpen = s === 'on' || s === 'open';
@@ -34,7 +34,6 @@ cards:
               ? 'mdi:window-open-variant' 
               : 'mdi:window-closed-variant';
           ]]]
-
       - type: custom:button-card
         entity: binary_sensor.pencere_mehmet_oda
         show_icon: false
@@ -50,10 +49,10 @@ cards:
             - box-shadow: none
             - padding: 0
           grid:
-            - grid-template-areas: '"n" "s"'
+            - grid-template-areas: "\"n\" \"s\""
             - grid-template-columns: 1fr
           name:
-            - grid-area: n
+            - grid-area: "n"
             - justify-self: start
             - text-align: left
             - font-weight: 450
@@ -65,7 +64,6 @@ cards:
             - font-size: 11px
             - line-height: 1
             - padding-top: 5px
-
       - type: custom:button-card
         entity: sensor.sonoff_a4b001b696_battery
         show_name: false
@@ -80,7 +78,7 @@ cards:
             - box-shadow: none
             - height: 30px
           grid:
-            - grid-template-areas: '"i s"'
+            - grid-template-areas: "\"i s\""
             - grid-template-columns: 16px 30px
             - justify-content: end
           icon:
