@@ -1,0 +1,135 @@
+type: custom:stack-in-card
+grid_options:
+  columns: 6
+  rows: 1
+card_mod:
+  style: |
+    ha-card { padding:4px 1px 3px 0px !important; margin:0 !important; }
+cards:
+  - type: custom:layout-card
+    card_mod:
+      style: |
+        ha-card{padding:0px} :host{
+         
+        }
+    layout_type: grid
+    layout:
+      grid-template-columns: 38px auto
+      align-items: center
+      column-gap: 0px
+      padding: 0
+      margin: "-0px 0px -3px -1px"
+    cards:
+      - type: custom:button-card
+        entity: image.camera_event_image
+        icon: mdi:cctv
+        show_name: false
+        tap_action:
+          action: more-info
+        styles:
+          card:
+            - width: 40px
+            - height: 40px
+            - border-radius: 50%
+            - padding: 0
+            - margin: 0px 0px 0px 0px
+            - box-shadow: none
+            - border: solid 2px rgba(var(--rgb-primary-color,0,136,204), 0.28)
+            - background-color: rgba(var(--rgb-primary-color,0,136,204), 0.12)
+          icon:
+            - width: 22px
+            - height: 22px
+            - color: var(--primary-color)
+      - type: custom:layout-card
+        card_mod:
+          style: >
+            ha-card { padding:0 !important; margin:0 !important;
+            box-shadow:none; border:none; }
+        layout_type: grid
+        layout:
+          grid-template-columns: 72px 72px
+          column-gap: 0px
+          align-items: center
+          padding: 0
+          margin: 4px 0px -5px 0px
+        cards:
+          - type: custom:button-card
+            entity: select.camera_guard_mode
+            name: Home
+            icon: mdi:home
+            layout: icon_name
+            show_state: false
+            styles:
+              card:
+                - height: 32px
+                - padding: 1px 3px 0px 0px
+                - margin: 0
+                - border-radius: 13px
+                - box-shadow: none
+                - border: 1px solid var(--divider-color)
+                - background: transparent
+              name:
+                - font-size: 13px
+                - font-weight: 500
+                - white-space: nowrap
+                - line-height: 14px
+              icon:
+                - width: 16px
+                - height: 16px
+            tap_action:
+              action: call-service
+              service: select.select_option
+              target:
+                entity_id: select.camera_guard_mode
+              data:
+                option: Home
+            state:
+              - value: Home
+                styles:
+                  card:
+                    - background-color: var(--primary-color)
+                    - border: 1px solid var(--primary-color)
+                  name:
+                    - color: var(--card-background-color)
+                  icon:
+                    - color: var(--card-background-color)
+          - type: custom:button-card
+            entity: select.camera_guard_mode
+            name: Away
+            icon: mdi:shield-lock-outline
+            layout: icon_name
+            show_state: false
+            styles:
+              card:
+                - height: 32px
+                - padding: 1px 3px 0px 0px
+                - margin: 0
+                - border-radius: 13px
+                - box-shadow: none
+                - border: 1px solid var(--divider-color)
+                - background: transparent
+              name:
+                - font-size: 13px
+                - font-weight: 500
+                - white-space: nowrap
+                - line-height: 14px
+              icon:
+                - width: 16px
+                - height: 16px
+            tap_action:
+              action: call-service
+              service: select.select_option
+              target:
+                entity_id: select.camera_guard_mode
+              data:
+                option: Away
+            state:
+              - value: Away
+                styles:
+                  card:
+                    - background-color: var(--primary-color)
+                    - border: 1px solid var(--primary-color)
+                  name:
+                    - color: var(--card-background-color)
+                  icon:
+                    - color: var(--card-background-color)
