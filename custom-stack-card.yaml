@@ -1,0 +1,333 @@
+type: custom:stack-in-card
+card_mod:
+  style: |
+    ha-card{padding:0px}
+    :host{
+      --vertical-stack-card-gap: 0px !important;
+      --stack-card-gap: 0px !important;
+      --masonry-view-card-margin: 2px !important; /* alt kartların margin'i */
+    }
+cards:
+  - type: custom:layout-card
+    layout_type: grid
+    layout:
+      grid-template-columns: repeat(6, minmax(0, auto))
+      column-gap: 1px
+      row-gap: 1px
+      align-items: stretch
+    cards:
+      - type: custom:button-card
+        entity: sensor.keenetic_hero_4g_memory_usage
+        icon: mdi:harddisk
+        show_name: true
+        show_state: true
+        name: Disk Doluluk
+        tap_action:
+          action: more-info
+        layout: icon_state
+        styles:
+          card:
+            - border-radius: 0px
+            - border: none
+            - box-shadow: none
+            - padding: 0px
+          grid:
+            - grid-template-areas: "\"i n\" \"i s\""
+            - grid-template-columns: 17px 53px
+            - row-gap: 2px
+            - column-gap: 0px
+            - align-items: center
+          img_cell:
+            - place-self: center
+            - width: 20px
+            - height: 20px
+            - padding: 0px
+          icon:
+            - width: 20px
+            - height: 20px
+            - "--mdc-icon-size": 20px
+            - color: var(--primary-color)
+          state:
+            - font-size: 10px
+            - font-weight: 500
+            - line-height: 1
+            - white-space: nowrap
+            - overflow: hidden
+            - text-overflow: ellipsis
+          name:
+            - font-size: 9px
+            - font-weight: 500
+            - line-height: 1
+            - white-space: nowrap
+            - overflow: hidden
+            - text-overflow: ellipsis
+            - color: gray
+        state_display: |
+          [[[
+            const u = entity?.attributes?.unit_of_measurement || '';
+            const v = Number(entity?.state);
+            if (isNaN(v)) return entity?.state || '—';
+            if (u.toLowerCase() === 'mib') return (v/1024).toFixed(1) + ' GİB';
+            return v.toLocaleString() + ' ' + u;
+          ]]]
+      - type: custom:button-card
+        entity: sensor.keenetic_hero_4g_ram_usage
+        icon: mdi:memory
+        show_name: true
+        show_state: true
+        name: RAM
+        tap_action:
+          action: more-info
+        layout: icon_state
+        styles:
+          card:
+            - border-radius: 0px
+            - border: none
+            - box-shadow: none
+            - padding: 0px
+          grid:
+            - grid-template-areas: "\"i n\" \"i s\""
+            - grid-template-columns: 17px 33px
+            - column-gap: 0px
+            - row-gap: 2px
+            - align-items: center
+          img_cell:
+            - place-self: center
+            - width: 20px
+            - height: 20px
+            - padding: 0px
+          icon:
+            - width: 20px
+            - height: 20px
+            - "--mdc-icon-size": 20px
+            - color: var(--primary-color)
+          state:
+            - font-size: 10px
+            - font-weight: 500
+            - line-height: 1
+            - white-space: nowrap
+            - overflow: hidden
+            - text-overflow: ellipsis
+          name:
+            - font-size: 9px
+            - font-weight: 500
+            - line-height: 1
+            - white-space: nowrap
+            - overflow: hidden
+            - text-overflow: ellipsis
+            - color: gray
+        state_display: |
+          [[[
+            const u = entity?.attributes?.unit_of_measurement || '';
+            const v = Number(entity?.state);
+            if (isNaN(v)) return entity?.state || '—';
+            if (u.toLowerCase() === 'mib') return (v/1024).toFixed(1) + ' GB';
+            return v.toLocaleString() + ' ' + u;
+          ]]]
+      - type: custom:button-card
+        entity: sensor.keenetic_hero_4g_cpu_usage
+        icon: mdi:cpu-64-bit
+        show_name: true
+        show_state: true
+        name: CPU
+        tap_action:
+          action: more-info
+        layout: icon_state
+        styles:
+          card:
+            - border-radius: 0px
+            - border: none
+            - box-shadow: none
+            - padding: 0px
+          grid:
+            - grid-template-areas: "\"i n\" \"i s\""
+            - grid-template-columns: 17px 20px
+            - column-gap: 0px
+            - row-gap: 2px
+            - align-items: center
+          img_cell:
+            - place-self: center
+            - width: 20px
+            - height: 20px
+            - padding: 0px
+          icon:
+            - width: 20px
+            - height: 20px
+            - "--mdc-icon-size": 20px
+            - color: var(--primary-color)
+          state:
+            - font-size: 11px
+            - font-weight: 500
+            - line-height: 1
+            - white-space: nowrap
+            - overflow: hidden
+            - text-overflow: ellipsis
+          name:
+            - font-size: 9px
+            - font-weight: 500
+            - line-height: 1
+            - white-space: nowrap
+            - overflow: hidden
+            - text-overflow: ellipsis
+            - color: gray
+      - type: custom:button-card
+        entity: sensor.keenetic_interface_pppoe0
+        show_name: true
+        show_state: true
+        name: LAN
+        tap_action:
+          action: more-info
+        layout: icon_state
+        styles:
+          card:
+            - border-radius: 0px
+            - border: none
+            - box-shadow: none
+            - padding: 0px
+          grid:
+            - grid-template-areas: "\"i n\" \"i s\""
+            - grid-template-columns: 17px 25px
+            - column-gap: 0px
+            - row-gap: 2px
+            - align-items: center
+          img_cell:
+            - place-self: center
+            - width: 20px
+            - height: 20px
+            - padding: 0px
+          icon:
+            - width: 20px
+            - height: 20px
+            - "--mdc-icon-size": 17px
+            - color: var(--primary-color)
+          state:
+            - font-size: 9px
+            - font-weight: 500
+            - line-height: 1
+            - white-space: nowrap
+            - overflow: hidden
+            - text-overflow: ellipsis
+          name:
+            - font-size: 9px
+            - font-weight: 500
+            - line-height: 1
+            - white-space: nowrap
+            - overflow: hidden
+            - text-overflow: ellipsis
+            - color: gray
+        state_display: |
+          [[[
+            const s = entity.state;
+            const st = s.charAt(0).toUpperCase() + s.slice(1);                   
+            return `${st}`;           
+          ]]]                        
+      - type: custom:button-card
+        entity: switch.keenetic_mobile_usblte0
+        show_name: true
+        show_state: true
+        name: Mobil internet
+        tap_action:
+          action: more-info
+        layout: icon_state
+        styles:
+          card:
+            - border-radius: 0px
+            - border: none
+            - box-shadow: none
+            - padding: 0px
+          grid:
+            - grid-template-areas: "\"i n\" \"i s\""
+            - grid-template-columns: 17px 57px
+            - column-gap: 0px
+            - row-gap: 2px
+            - align-items: center
+          img_cell:
+            - place-self: center
+            - width: 20px
+            - height: 20px
+            - padding: 0px
+          icon:
+            - width: 20px
+            - height: 20px
+            - "--mdc-icon-size": 17px
+            - color: var(--primary-color)
+          state:
+            - font-size: 9px
+            - font-weight: 500
+            - line-height: 1
+            - white-space: nowrap
+            - overflow: hidden
+            - text-overflow: ellipsis
+          name:
+            - font-size: 9px
+            - font-weight: 500
+            - line-height: 1
+            - white-space: nowrap
+            - overflow: hidden
+            - text-overflow: ellipsis
+            - color: gray
+        state_display: |
+          [[[
+            const s = entity.state;
+            const st = s.charAt(0).toUpperCase() + s.slice(1);        
+            const simStatus = entity.attributes.sim;
+            return `${st} (${simStatus})`;           
+          ]]]            
+      - type: custom:button-card
+        entity: sensor.keenetic_hero_4g_uptime
+        icon: mdi:restart
+        show_name: true
+        show_state: true
+        name: Restart
+        tap_action:
+          action: more-info
+        layout: icon_state
+        styles:
+          card:
+            - border-radius: 0px
+            - border: none
+            - box-shadow: none
+            - padding: 0px
+          grid:
+            - grid-template-areas: "\"i n\" \"i s\""
+            - grid-template-columns: 17px 64px
+            - column-gap: 0px
+            - row-gap: 2px
+            - align-items: center
+          img_cell:
+            - place-self: center
+            - width: 20px
+            - height: 20px
+            - padding: 0px
+          icon:
+            - width: 20px
+            - height: 20px
+            - "--mdc-icon-size": 20px
+            - color: var(--primary-color)
+          state:
+            - font-size: 10px
+            - font-weight: 500
+            - line-height: 1
+            - white-space: nowrap
+            - overflow: hidden
+            - text-overflow: ellipsis
+          name:
+            - font-size: 9px
+            - font-weight: 500
+            - line-height: 1
+            - white-space: nowrap
+            - overflow: hidden
+            - text-overflow: ellipsis
+            - color: gray
+        state_display: |
+          [[[
+            const v = entity?.state;
+            if (!v || v === 'unknown' || v === 'unavailable') return '—';
+            const last = new Date(v); const now = new Date();
+            const s = v;
+            const d = Math.floor(s/86400);
+            const h = Math.floor((s%86400)/3600);
+            const m = Math.floor((s%3600)/60);
+            const tmp = d>0 ? `${d}g ${h}s` : (h>0 ? `${h}s ${m}dk` : `${m}dk`);
+            return tmp + ' önce';
+          ]]]
