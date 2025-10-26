@@ -1,0 +1,76 @@
+type: custom:purifier-card
+entity: fan.zhimi_mb5_9e0a_air_purifier
+grid_options:
+  columns: 6
+show_name: true
+show_preset_mode: false
+show_state: false
+show_toolbar: true
+compact_view: false
+shortcuts:
+  - name: Silent
+    icon: mdi:weather-night
+    preset_mode: Sleep
+  - name: 33%
+    icon: mdi:fan-speed-1
+    percentage: 33
+  - name: 66%
+    icon: mdi:fan-speed-2
+    percentage: 66
+  - name: 100%
+    icon: mdi:fan-speed-3
+    percentage: 100
+  - name: Auto
+    icon: mdi:brightness-auto
+    preset_mode: Auto
+stats:
+  - entity_id: sensor.zhimi_mb5_9e0a_pm25_density
+    value_template: "AIQ: {{ value   }} "
+    unit: µg/m³
+card_mod:
+  style: |
+    /* Bu stil purifier-card'ın shadow-root'una enjekte edilir */
+    :host {
+
+    }
+    :host .slider {
+
+      width: 110px !important;        /* bazı kartlar max-width yerine width okuyor */
+      height: 123px !important;       /* kapsayıcı yüksekliği */   
+    }
+
+    /* Çemberin kendisi (round-slider) de genişlik/yüksekliği ister */
+    :host .slider round-slider {
+      width: 110px !important;
+      height: 9px !important;
+    }
+
+    :host .toolbar ha-icon-button {      
+        width: 26px;
+        height: 26px;
+        mdc-icon-button-size: 26px;
+        margin-bottom: 16px;
+        margin-right:1px;
+        margin-left:2px;
+        padding-left:0px !important;
+      }
+     :host .fill-gap {
+         flex-grow:0
+       }
+      :host .toolbar { padding: 1px 1px 1px 1px;
+                      justify-content:flex-start;                                          
+                     }
+      :host .tips { display:none}
+      :host .stats-block { padding:0px;font-size:smaller;}
+      :host .stats-value { font-size:small}
+      :host .more-info {
+             position:absolute; right:0px;
+              } 
+      :host .metadata {margin:0px; padding:0px}
+      :host .friendly-name {font-weight:600; font-size:small;}
+      :host .slider-value {position:relative;
+                                  width: 50px;
+                                  bottom:-90px;
+                                  left: -14px;
+                                  font-size:smaller
+                            }  
