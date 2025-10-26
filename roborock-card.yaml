@@ -1,0 +1,291 @@
+type: custom:stack-in-card
+grid_options:
+  columns: 6
+card_mod:
+  style: |
+    ha-card{padding:2px}
+    :host{
+      --vertical-stack-card-gap: 0px !important;
+      --stack-card-gap: 0px !important;
+      --masonry-view-card-margin: 2px !important; /* alt kartların margin'i */
+    }
+cards:
+  - type: custom:button-card
+    entity: vacuum.robocop
+    name: RoboCop
+    show_icon: true
+    show_name: true
+    show_state: false
+    tap_action:
+      action: more-info
+    styles:
+      card:
+        - position: relative
+        - padding: 4px 0px 4px 0px
+        - border-radius: 12px
+        - background: var(--card-background-color)
+      grid:
+        - grid-template-areas: "\"n\" \"i\" \"st\""
+        - grid-template-rows: auto auto auto
+        - row-gap: 1px
+      name:
+        - justify-self: center
+        - font-weight: 600
+        - font-size: 14px
+        - margin: 0
+      icon:
+        - width: 40px
+        - height: 40px
+        - margin: 0
+        - padding: 0px
+      custom_fields:
+        st:
+          - justify-self: center
+          - font-size: 12px
+          - color: var(--secondary-text-color)
+          - margin-top: 2px
+        tl:
+          - position: absolute
+          - left: 8px
+          - top: 8px
+          - display: flex
+          - flex-direction: column
+          - gap: 16px
+          - font-size: 16px
+        tr:
+          - position: absolute
+          - width: 47px
+          - right: 0px
+          - top: 8px
+          - display: flex
+          - align-items: left
+          - font-size: 11px
+          - font-weight: 500
+        br:
+          - position: absolute
+          - width: 47px
+          - min-width: 47px
+          - right: 0px
+          - top: 30px
+          - align-items: left
+          - display: flex
+          - gap: 4px
+          - line-height: 1
+          - font-size: 11px
+          - font-weight: 500
+        bl:
+          - position: absolute
+          - left: 8px
+          - bottom: 8px
+          - font-size: 16px
+    custom_fields:
+      st: |
+        [[[
+          const s = states['sensor.robocop_status']?.state || '';
+          return s ? s.replaceAll('_',' ') : '';
+        ]]]
+      tl: |
+        [[[
+          const on=(e)=>states[e]?.state==='on';
+          const arr=[];
+          if (on('binary_sensor.robocop_mop_attached')) arr.push('🧼');
+          if (on('binary_sensor.robocop_water_box_attached')) arr.push('💧');
+          return `<div>${arr.join('<br/>')}</div>`;
+        ]]]
+      tr: |
+        [[[
+          const raw = Number(states['sensor.robocop_battery']?.state);
+          if (Number.isNaN(raw)) return '';
+          const lvl = Math.max(0, Math.min(100, Math.round(raw)));
+          const chg = states['binary_sensor.robocop_charging']?.state === 'on';
+          const step = Math.floor(lvl/10)*10 || 10;
+          const icon = chg
+            ? (step>=100 ? 'mdi:battery-charging-100' : `mdi:battery-charging-${step}`)
+            : (step>=100 ? 'mdi:battery' : `mdi:battery-${step}`);
+          return `<span style="display:flex;align-items:center;gap:1px;">
+                    <ha-icon icon="${icon}" style="width:16px;height:16px;"></ha-icon>
+                    <span>${lvl}%</span>
+                  </span>`;
+        ]]]
+      br: |
+        [[[
+          const vRaw = Number(states['number.robocop_volume']?.state);
+          if (Number.isNaN(vRaw)) return '';
+          const v = Math.max(0, Math.min(100, Math.round(vRaw)));
+          let volIcon = 'mdi:volume-off';
+          if (v > 66) volIcon = 'mdi:volume-high';
+          else if (v > 33) volIcon = 'mdi:volume-medium';
+          else if (v > 0) volIcon = 'mdi:volume-low';
+          return `<span style="display:flex;align-items:center;gap:1px;">
+                    <ha-icon icon="${volIcon}" style="width:16px;height:16px;"></ha-icon>
+                    <span>${v}%</span>
+                  </span>`;
+        ]]]
+      bl: |
+        [[[
+          return states['binary_sensor.robocop_charging']?.state==='on' ? '⚡' : '';
+        ]]]
+  - type: custom:layout-card
+    layout_type: grid
+    layout:
+      grid-template-columns: auto auto
+      column-gap: 0px
+      align-items: start
+      padding: 0px
+      margin: 0px
+    card_mod:
+      style: |
+        ha-card{box-shadow:none;border:none;padding:0;margin:0}
+        ha-tile-icon : { padding:1px !important}
+    cards:
+      - type: tile
+        entity: input_select.robocop_fan
+        icon: mdi:fan
+        name: Fan
+        vertical: false
+        card_mod:
+          style: >
+            :host{min-width:0!important;--tile-icon-size:16px} :host .container
+            {padding:0px !important; margin:0px !important; } :host .content
+            {gap:0px ;width:100%;padding:0px !important; margin:0px !important;
+            border: solid 1px #e0e4e9; border-radius: 6px; } :host ha-tile-icon
+            {padding:4px 1px 3px 1px}
+            ha-card{padding:0;margin:0;border:none;box-shadow:none;border-radius:12px}
+            :host ::part(container){min-height:26px!important;padding:2px
+            8px!important} :host ::part(primary){font-size:13px;line-height:1.1}
+            :host ::part(secondary){font-size:11px;line-height:1.1} @media
+            (max-width:480px){
+              :host ::part(container){min-height:24px!important;padding:1px 6px!important}
+            }
+      - type: tile
+        entity: select.robocop_mop_intensity
+        icon: mdi:water
+        name: Mop
+        vertical: false
+        card_mod:
+          style: >
+            :host{min-width:0!important;--tile-icon-size:16px} :host .container
+            {padding:0px !important; margin:0px !important; } :host .content
+            {gap:0px ;width:100%;  padding:0px !important; margin:0px
+            !important;border: solid 1px #e0e4e9; border-radius: 6px} :host
+            ha-tile-icon {padding:4px 1px 3px 1px}
+            ha-card{padding:0;margin:0;border:none;box-shadow:none;border-radius:12px}
+             ha-tile-icon : { padding:1px !important}
+  - type: custom:layout-card
+    layout_type: grid
+    layout:
+      grid-template-columns: auto 40px
+      column-gap: 1px
+      align-items: center
+      padding: 0px
+      margin: 0px
+    card_mod:
+      style: |
+        ha-card{box-shadow:none;border:none;padding:0;margin:0}
+    cards:
+      - type: tile
+        entity: input_select.robocop_oda
+        icon: mdi:target-variant
+        name: Oda
+        vertical: false
+        card_mod:
+          style: >
+            :host{min-width:0!important;--tile-icon-size:16px} :host .container
+            {padding:0px !important; margin:0px !important; } :host .content
+            {gap:0px ;width:100%;  padding:0px !important; margin:0px
+            !important;border: solid 1px #e0e4e9; border-radius: 6px} :host
+            ha-tile-icon {padding:4px 1px 3px 1px}
+            ha-card{padding:0;margin:0;border:none;box-shadow:none;border-radius:12px}
+             ha-tile-icon : { padding:1px !important}
+      - type: custom:button-card
+        icon: mdi:play
+        show_name: false
+        styles:
+          card:
+            - width: 40px
+            - height: 40px
+            - padding: 0
+            - border-radius: 12px
+            - box-shadow: none
+            - justify-self: end
+          icon:
+            - width: 18px
+            - height: 18px
+        tap_action:
+          action: call-service
+          service: script.robocop_secili_odayi_temizle
+  - type: custom:layout-card
+    layout_type: grid
+    layout:
+      grid-template-columns: repeat(4, 1fr)
+      column-gap: 3px
+      align-items: center
+      padding: 0px 0px 0px 0px
+    card_mod:
+      style: |
+        ha-card{box-shadow:none;border:none;padding:0;margin:0}
+    cards:
+      - type: custom:button-card
+        icon: mdi:play
+        show_name: false
+        styles:
+          card:
+            - padding: 6px 2px 6px 2px
+            - border-radius: 12px
+            - box-shadow: none
+          icon:
+            - width: 20px
+            - height: 20px
+        tap_action:
+          action: call-service
+          service: vacuum.start
+          data:
+            entity_id: vacuum.robocop
+      - type: custom:button-card
+        icon: mdi:pause
+        show_name: false
+        styles:
+          card:
+            - padding: 6px 2px 6px 2px
+            - border-radius: 12px
+            - box-shadow: none
+          icon:
+            - width: 20px
+            - height: 20px
+        tap_action:
+          action: call-service
+          service: vacuum.pause
+          data:
+            entity_id: vacuum.robocop
+      - type: custom:button-card
+        icon: mdi:home-import-outline
+        show_name: false
+        styles:
+          card:
+            - padding: 6px 2px 6px 2px
+            - border-radius: 12px
+            - box-shadow: none
+          icon:
+            - width: 20px
+            - height: 20px
+        tap_action:
+          action: call-service
+          service: vacuum.return_to_base
+          data:
+            entity_id: vacuum.robocop
+      - type: custom:button-card
+        icon: mdi:map-marker
+        show_name: false
+        styles:
+          card:
+            - padding: 6px 2px 6px 2px
+            - border-radius: 12px
+            - box-shadow: none
+          icon:
+            - width: 20px
+            - height: 20px
+        tap_action:
+          action: call-service
+          service: vacuum.locate
+          data:
+            entity_id: vacuum.robocop
