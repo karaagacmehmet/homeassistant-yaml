@@ -57,7 +57,7 @@
       if (this._built) return;
       this._root.innerHTML = `
         <style>
-          ha-card{ padding:9px; }
+          ha-card{ padding:11px; }
           .wrap{ display:flex; align-items:center; gap:8px; }
           .left{
             width:34px; min-height:34px;
@@ -77,7 +77,7 @@
             border:none; background:none; box-shadow:none; height:30px;
             cursor: pointer;
           }
-          ha-icon.left-ico{ width:28px; height:24px; } /* window icon */
+          ha-icon.left-ico{ width:30px; height:30px;  --mdc-icon-size:30px; } /* window icon */
 
           /* Compact state-badge: tam 16x16, padding/margin yok */
           state-badge.batt-badge{
