@@ -1,0 +1,225 @@
+type: custom:stack-in-card
+grid_options:
+  columns: 6
+  rows: auto
+card_mod:
+  style: |
+    ha-card { padding: 0px }
+    :host {
+      --vertical-stack-card-gap: 0px !important;
+      --stack-card-gap: 0px !important;
+    }
+cards:
+  - type: custom:layout-card
+    layout_type: grid
+    layout:
+      grid-template-columns: repeat(4, 45px 35px 40px auto)
+      column-gap: 1px
+      row-gap: 0px
+      align-items: center
+      padding: 0px
+      margin: 2px 0px -2px 0px
+    cards:
+      - type: custom:button-card
+        entity: select.camera_guard_mode
+        icon: mdi:cctv
+        show_name: false
+        tap_action:
+          action: more-info
+        styles:
+          card:
+            - width: 37px
+            - height: 37px
+            - border-radius: 50%
+            - padding: 0px
+            - margin-top: 3px
+            - box-shadow: none
+            - border: solid 2px rgba(var(--rgb-primary-color,0,136,204), 0.28)
+            - background-color: rgba(var(--rgb-primary-color,0,136,204), 0.12)
+            - display: flex
+            - align-items: center
+            - justify-content: center
+          icon:
+            - width: 22px
+            - height: 22px
+            - color: var(--primary-color)
+      - type: vertical-stack
+        cards:
+          - type: custom:button-card
+            entity: select.camera_guard_mode
+            icon: mdi:home
+            show_name: false
+            tap_action:
+              action: call-service
+              service: select.select_option
+              target:
+                entity_id: select.camera_guard_mode
+              data:
+                option: Home
+            styles:
+              card:
+                - width: 28px
+                - height: 28px
+                - border-radius: 8px
+                - padding: 0px
+                - margin: 0px 0px 0px 1px
+                - box-shadow: none
+                - border: none
+                - background: transparent
+                - display: flex
+                - align-items: center
+                - justify-content: center
+              icon:
+                - width: 22px
+                - height: 22px
+                - color: var(--secondary-text-color)
+            state:
+              - value: Home
+                styles:
+                  card:
+                    - background-color: var(--primary-color)
+                    - border-radius: 8px
+                  icon:
+                    - color: var(--card-background-color)
+          - type: custom:button-card
+            show_icon: false
+            name: Home
+            show_state: false
+            tap_action:
+              action: none
+            styles:
+              card:
+                - width: 30px
+                - padding: 0px
+                - margin: 3px 0 0 0
+                - box-shadow: none
+                - border: none
+                - background: transparent
+              name:
+                - font-size: 11px
+                - font-weight: 400
+                - color: var(--secondary-text-color)
+                - justify-self: center
+                - text-align: center
+      - type: vertical-stack
+        cards:
+          - type: custom:button-card
+            entity: select.camera_guard_mode
+            icon: mdi:walk
+            show_name: false
+            tap_action:
+              action: call-service
+              service: select.select_option
+              target:
+                entity_id: select.camera_guard_mode
+              data:
+                option: Away
+            styles:
+              card:
+                - width: 28px
+                - height: 28px
+                - border-radius: 8px
+                - padding: 0px
+                - margin: 0px 0px 0px 4px
+                - box-shadow: none
+                - border: none
+                - background: transparent
+                - display: flex
+                - align-items: center
+                - justify-content: center
+              icon:
+                - width: 22px
+                - height: 22px
+                - color: var(--secondary-text-color)
+            state:
+              - value: Away
+                styles:
+                  card:
+                    - background-color: var(--primary-color)
+                    - border-radius: 8px
+                  icon:
+                    - color: var(--card-background-color)
+          - type: custom:button-card
+            show_icon: false
+            name: Away
+            show_state: false
+            tap_action:
+              action: none
+            styles:
+              card:
+                - padding: 0px
+                - margin: 3px 0 0 0
+                - box-shadow: none
+                - border: none
+                - background: transparent
+              name:
+                - width: 28px
+                - font-size: 11px
+                - font-weight: 400
+                - color: var(--secondary-text-color)
+                - justify-self: center
+                - text-align: center
+      - type: vertical-stack
+        cards:
+          - type: custom:button-card
+            entity: button.camera_reset_alarm
+            icon: mdi:alarm-light-off
+            show_name: false
+            state:
+              - entity_id: binary_sensor.camera_alarm
+                value: "on"
+                styles:
+                  icon:
+                    - color: red
+              - entity_id: binary_sensor.camera_alarm
+                value: "off"
+                styles:
+                  icon:
+                    - color: red
+            tap_action:
+              action: call-service
+              service: button.press
+              target:
+                entity_id: button.camera_reset_alarm
+            styles:
+              card:
+                - width: 28px
+                - height: 28px
+                - border-radius: 8px
+                - padding: 0px
+                - margin: 0px 0px 0px 10px
+                - box-shadow: none
+                - border: none
+                - background: transparent
+                - display: flex
+                - align-items: center
+                - justify-content: center
+              icon:
+                - width: 22px
+                - height: 22px
+                - color: |
+                    [[[ 
+                     return states['binary_sensor.camera_alarm'].state === 'on' 
+                     ? 'red' 
+                     : 'var(--secondary-text-color)'; 
+                    ]]]
+          - type: custom:button-card
+            show_icon: false
+            name: Stop Alarm
+            show_state: false
+            tap_action:
+              action: none
+            styles:
+              card:
+                - width: 57px
+                - padding: 0px
+                - margin: 3px 0 0 0
+                - box-shadow: none
+                - border: none
+                - background: transparent
+              name:
+                - font-size: 11px
+                - font-weight: 400
+                - color: var(--secondary-text-color)
+                - justify-self: center
+                - text-align: center
