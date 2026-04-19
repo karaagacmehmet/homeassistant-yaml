@@ -6,21 +6,20 @@
   window.customCards.push({
     type: TAG,
     name: "Mini Switch Card",
-    description: "Boyut ve hizalama sorunları tamamen giderilmiş sürüm.",
+    description: "İkon önceliği (Cihaz sınıfı dahil) tam düzeltilmiş profesyonel sürüm.",
   });
 
   class MiniSwitchCard extends HTMLElement {
     setConfig(config) {
       if (!config || !config.entity) throw new Error("Entity zorunlu.");
       
-      // Verileri ana dizinden alacak şekilde zorla
       this._config = {
         entity: config.entity,
         name: config.name || "",
         icon: config.icon || "",
         checked_color: config.checked_color || "#34c759",
-        icon_size: config.icon_size || 20,
-        font_size: config.font_size || 11,
+        icon_size: Number(config.icon_size) || 20,
+        font_size: Number(config.font_size) || 11,
         width_i: config.width_i || "18px",
         width_n: config.width_n || "36px",
         width_s: config.width_s || "21px",
@@ -38,8 +37,7 @@
 
     _toggle(ev) {
       ev.stopPropagation();
-      const domain = this._config.entity.split(".")[0];
-      this._hass.callService(domain, "toggle", { entity_id: this._config.entity });
+      this._hass.callService("homeassistant", "toggle", { entity_id: this._config.entity });
     }
 
     _build() {
@@ -48,7 +46,9 @@
         <style id="main-style"></style>
         <ha-card>
           <div class="wrap" id="w">
-            <div class="i" id="ico_cell"><ha-icon id="ico"></ha-icon></div>
+            <div class="i" id="ico_cell">
+              <ha-state-icon id="ico"></ha-state-icon>
+            </div>
             <div class="n" id="nam"></div>
             <div class="s"><ha-switch id="sw"></ha-switch></div>
           </div>
@@ -68,20 +68,20 @@
       const nam = this._root.getElementById("nam");
       const sw = this._root.getElementById("sw");
 
-      // Dinamik CSS'i Style Tag içine basıyoruz (En güçlü yöntem)
+      const isOff = stateObj.state === "off";
+
       styleEl.textContent = `
         ha-card { background: none; border: none; box-shadow: none; padding: 0px 2px; height: 100%; display: flex; align-items: center; }
         .wrap { 
-          display: grid; 
-          grid-template-areas: "i n switch"; 
+          display: grid; grid-template-areas: "i n switch"; 
           grid-template-columns: ${this._config.width_i} ${this._config.width_n} ${this._config.width_s};
-          column-gap: 5px; align-items: center; margin-left: 7px; width: 100%;
+          column-gap: 5px; align-items: center; margin-left: 0px; width: 100%;
         }
         .i { grid-area: i; display: flex; align-items: center; justify-content: center; width: ${this._config.icon_size}px; height: ${this._config.icon_size}px; }
-        ha-icon { 
+        ha-state-icon { 
           --mdc-icon-size: ${this._config.icon_size}px !important; 
           width: ${this._config.icon_size}px !important; height: ${this._config.icon_size}px !important; 
-          color: var(--primary-color); display: flex; 
+          color: var(--primary-color); display: flex;
         }
         .n { 
           grid-area: n; font-weight: 500; white-space: nowrap; overflow: hidden; color: var(--primary-text-color); 
@@ -98,9 +98,27 @@
         }
       `;
       
-      ico.setAttribute("icon", this._config.icon || stateObj.attributes.icon || "mdi:toggle-switch");
+      // --- YENİLENMİŞ İKON MANTIĞI ---
+      ico.hass = this._hass;
+      ico.stateObj = stateObj;
+
+      // 1. Durum: Kartın ayarlarında manuel ikon varsa onu kullan
+      if (this._config.icon) {
+        ico.setAttribute("icon", this._config.icon);
+      } 
+      // 2. Durum: Entity'nin kendi ikonu VEYA kendi Cihaz Sınıfı (USB, outlet vb.) varsa
+      // Home Assistant'ın (ha-state-icon) kendi ikonunu bulmasına izin ver (Hiçbir şeyi override etme)
+      else if (stateObj.attributes.icon || stateObj.attributes.device_class) {
+        ico.removeAttribute("icon"); 
+      }
+      // 3. Durum: Hiçbir şey bulunamadıysa (Tamamen boşsa), o zaman default toggle koy
+      else {
+        const defaultIcon = isOff ? "mdi:toggle-switch-off-outline" : "mdi:toggle-switch";
+        ico.setAttribute("icon", defaultIcon);
+      }
+
       nam.textContent = this._config.name || stateObj.attributes.friendly_name;
-      sw.checked = stateObj.state === "on";
+      sw.checked = !isOff;
     }
 
     static getConfigElement() { return document.createElement(EDITOR); }
@@ -109,14 +127,8 @@
 
   /* EDITOR */
   class MiniSwitchCardEditor extends HTMLElement {
-    setConfig(config) {
-      this._config = config;
-      this._render();
-    }
-    set hass(hass) {
-      this._hass = hass;
-      if (this._form) this._form.hass = hass;
-    }
+    setConfig(config) { this._config = config; this._render(); }
+    set hass(hass) { this._hass = hass; if (this._form) this._form.hass = hass; }
     _render() {
       if (!this.shadowRoot) this.attachShadow({ mode: "open" });
       if (!this._form) {
@@ -131,7 +143,7 @@
       this._form.schema = [
         { name: "entity", selector: { entity: {} } },
         { name: "name", label: "İsim", selector: { text: {} } },
-        { name: "icon", label: "İkon", selector: { icon: {} } },
+        { name: "icon", label: "İkon (Manuel)", selector: { icon: {} } },
         { name: "icon_size", label: "İkon Boyutu (px)", selector: { number: { min: 8, max: 50, mode: "box" } } },
         { name: "font_size", label: "Yazı Boyutu (px)", selector: { number: { min: 8, max: 30, mode: "box" } } },
         { name: "checked_color", label: "Aktif Renk", selector: { text: {} } },
