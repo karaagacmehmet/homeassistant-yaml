@@ -6,7 +6,7 @@
   window.customCards.push({
     type: TAG,
     name: "Mini Switch Card",
-    description: "İkon önceliği (Cihaz sınıfı dahil) tam düzeltilmiş profesyonel sürüm.",
+    description: "İkon ve İsim tıklama özelliği (More-Info) eklenmiş sürüm.",
   });
 
   class MiniSwitchCard extends HTMLElement {
@@ -35,9 +35,21 @@
       this._update();
     }
 
+    // Switch için toggle fonksiyonu
     _toggle(ev) {
       ev.stopPropagation();
       this._hass.callService("homeassistant", "toggle", { entity_id: this._config.entity });
+    }
+
+    // İkon ve İsim için detay penceresini açma fonksiyonu
+    _openMoreInfo(ev) {
+      ev.stopPropagation();
+      const event = new CustomEvent("hass-more-info", {
+        detail: { entityId: this._config.entity },
+        bubbles: true,
+        composed: true,
+      });
+      this.dispatchEvent(event);
     }
 
     _build() {
@@ -54,7 +66,12 @@
           </div>
         </ha-card>
       `;
+      
+      // Event Listeners
       this._root.getElementById("sw").addEventListener("click", (e) => this._toggle(e));
+      this._root.getElementById("ico_cell").addEventListener("click", (e) => this._openMoreInfo(e));
+      this._root.getElementById("nam").addEventListener("click", (e) => this._openMoreInfo(e));
+      
       this._built = true;
     }
 
@@ -77,7 +94,11 @@
           grid-template-columns: ${this._config.width_i} ${this._config.width_n} ${this._config.width_s};
           column-gap: 5px; align-items: center; margin-left: 0px; width: 100%;
         }
-        .i { grid-area: i; display: flex; align-items: center; justify-content: center; width: ${this._config.icon_size}px; height: ${this._config.icon_size}px; }
+        .i { 
+          grid-area: i; display: flex; align-items: center; justify-content: center; 
+          width: ${this._config.icon_size}px; height: ${this._config.icon_size}px; 
+          cursor: pointer; 
+        }
         ha-state-icon { 
           --mdc-icon-size: ${this._config.icon_size}px !important; 
           width: ${this._config.icon_size}px !important; height: ${this._config.icon_size}px !important; 
@@ -87,6 +108,7 @@
           grid-area: n; font-weight: 500; white-space: nowrap; overflow: hidden; color: var(--primary-text-color); 
           display: flex; align-items: center; line-height: 1; 
           font-size: ${this._config.font_size}px !important; 
+          cursor: pointer;
         }
         .s { grid-area: switch; justify-self: end; margin-right: -4px; display: flex; align-items: center; }
         ha-switch {
@@ -98,20 +120,15 @@
         }
       `;
       
-      // --- YENİLENMİŞ İKON MANTIĞI ---
       ico.hass = this._hass;
       ico.stateObj = stateObj;
 
-      // 1. Durum: Kartın ayarlarında manuel ikon varsa onu kullan
       if (this._config.icon) {
         ico.setAttribute("icon", this._config.icon);
       } 
-      // 2. Durum: Entity'nin kendi ikonu VEYA kendi Cihaz Sınıfı (USB, outlet vb.) varsa
-      // Home Assistant'ın (ha-state-icon) kendi ikonunu bulmasına izin ver (Hiçbir şeyi override etme)
       else if (stateObj.attributes.icon || stateObj.attributes.device_class) {
         ico.removeAttribute("icon"); 
       }
-      // 3. Durum: Hiçbir şey bulunamadıysa (Tamamen boşsa), o zaman default toggle koy
       else {
         const defaultIcon = isOff ? "mdi:toggle-switch-off-outline" : "mdi:toggle-switch";
         ico.setAttribute("icon", defaultIcon);
