@@ -8,7 +8,6 @@ blueprint:
       description: "Cihazın 'action' sensörünü seçin."
       selector:
         device:
-          domain: sensor
     # ON BUTTON
     on_press:
       name: "On - Press"
