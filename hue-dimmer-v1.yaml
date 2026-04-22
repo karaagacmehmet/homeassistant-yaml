@@ -7,7 +7,7 @@ blueprint:
       name: "Hue Dimmer Action Sensor"
       description: "Cihazın 'action' sensörünü seçin."
       selector:
-        entity:
+        device:
           domain: sensor
     # ON BUTTON
     on_press:
