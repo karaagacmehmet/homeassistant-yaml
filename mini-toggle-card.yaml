@@ -1,0 +1,53 @@
+type: custom:button-card
+entity: input_boolean.misafir_modu
+name: Misafir
+show_name: true
+show_icon: true
+tap_action:
+  action: more-info
+layout: icon_name
+styles:
+  card:
+    - border: none
+    - box-shadow: none
+    - padding: 0px
+    - height: 100%
+  grid:
+    - grid-template-areas: "\"i n switch\""
+    - grid-template-columns: 32px 66px 20px
+  icon:
+    - width: 20px
+    - height: 20px
+  name:
+    - font-size: 11px
+    - font-weight: 500
+    - justify-self: start
+    - white-space: nowrap
+    - color: var(--primary-text-color)
+  custom_fields:
+    switch:
+      - justify-self: end
+custom_fields:
+  switch:
+    card:
+      type: entities
+      entities:
+        - entity: input_boolean.misafir_modu
+          name: ""
+          icon: mdi:none
+          secondary_info: none
+          card_mod:
+            style:
+              hui-generic-entity-row:
+                $: |
+                  state-badge, .info { display: none !important; } 
+                   :host {  padding: 0 !important; margin: 0 !important;border: none !important;  }                       
+      card_mod:
+        style: |
+          ha-card {
+            background: none !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+          }
+          #states { padding: 0 !important; overflow :hidden }
