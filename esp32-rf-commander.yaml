@@ -1,0 +1,331 @@
+# Board: Generic ESP32 Board (Generic)
+# Definition: definitions/boards/generic-esp32/manifest.yaml
+
+esphome:
+  name: rf-commander
+  friendly_name: rf-commander
+
+esp32:
+  variant: esp32
+  framework:
+    type: arduino
+logger:
+
+api:
+  encryption:
+    key: "************"
+  actions:
+    - action: raw_kod_gonder
+      variables:
+        raw_code: string
+        repeat_count: int
+      then:
+        - lambda: |-
+            std::string str = raw_code;
+            std::vector<int> raw_vec;
+            
+            // Virgül ile ayrılmış string'i sayı dizisine dönüştürme (sstream olmadan)
+            size_t start = 0;
+            size_t end = str.find(',');
+            while (end != std::string::npos) {
+                std::string token = str.substr(start, end - start);
+                if (!token.empty()) {
+                    raw_vec.push_back(std::atoi(token.c_str()));
+                }
+                start = end + 1;
+                end = str.find(',', start);
+            }
+            if (start < str.length()) {
+                std::string token = str.substr(start);
+                if (!token.empty()) {
+                    raw_vec.push_back(std::atoi(token.c_str()));
+                }
+            }
+
+            // Raw veriyi vericiye fırlatma
+            if (!raw_vec.empty()) {
+                auto call = id(rf_transmitter).transmit();
+                auto *data = call.get_data();
+                data->set_carrier_frequency(0);
+
+                for (int r = 0; r < repeat_count; r++) {
+                    for (int val : raw_vec) {
+                        if (val > 0) {
+                            data->mark(val);
+                        } else if (val < 0) {
+                            data->space(-val);
+                        }
+                    }
+                }
+                call.perform();
+            }
+    
+ota:
+  - platform: esphome
+    encryption:
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: rf-commander Fallback Hotspot
+    password: "******"
+
+captive_portal:
+
+web_server:
+  port: 80
+
+# Globals to store learned signals
+globals:
+  - id: learned_code
+    type: std::vector<int32_t>
+    restore_value: no
+  - id: learning_mode
+    type: bool
+    initial_value: 'false'
+  - id: signal_learned
+    type: bool
+    initial_value: 'false'
+
+# SPI Bus
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO23
+  miso_pin: GPIO19
+
+# CC1101 - Dual Pin Mode
+cc1101:
+  id: cc1101_module
+  cs_pin: GPIO5
+  frequency: 433.92MHz
+  output_power: 10
+  modulation_type: ASK/OOK
+  symbol_rate: 5000
+  filter_bandwidth: 200kHz
+
+# Remote Receiver - connected to GDO2
+remote_receiver:
+  id: rf_receiver
+  pin: GPIO2
+  tolerance: 50%
+  filter: 200us
+  dump:
+    - raw
+  idle: 10ms
+  on_raw:
+    then:
+      - lambda: |-
+          // Log as single copyable line for YAML
+          std::string code_str = "";
+          for (int i = 0; i < x.size(); i++) {
+            if (i > 0) code_str += ", ";
+            code_str += std::to_string(x[i]);
+          }
+          ESP_LOGI("raw_code", "Pulses: %d", x.size());
+          ESP_LOGI("raw_code", "Copy this line:");
+          ESP_LOGI("raw_code", "[%s]", code_str.c_str());
+          
+          // Learning mode logic
+          if (id(learning_mode)) {
+            id(learned_code).clear();
+            for (int32_t val : x) {
+              id(learned_code).push_back(val);
+            }
+            id(signal_learned) = true;
+            id(learning_mode) = false;
+            
+            std::string preview = "";
+            int count = 0;
+            for (int32_t val : id(learned_code)) {
+              if (count > 0) preview += ", ";
+              preview += std::to_string(val);
+              count++;
+              if (count >= 20) {
+                preview += "... (" + std::to_string(id(learned_code).size()) + " total)";
+                break;
+              }
+            }
+            
+            id(last_signal).publish_state(preview.c_str());
+            id(learn_status).publish_state("Signal learned! " + std::to_string(id(learned_code).size()) + " pulses. Select slot to save.");
+          }
+
+# Remote Transmitter - connected to GDO0
+remote_transmitter:
+  id: rf_transmitter
+  pin: GPIO4
+  carrier_duty_percent: 100%
+  on_transmit:
+    then:
+      - cc1101.begin_tx: cc1101_module
+  on_complete:
+    then:
+      - cc1101.begin_rx: cc1101_module
+
+switch:
+  - platform: template
+    name: "Learning Mode"
+    id: learning_mode_switch
+    icon: "mdi:school"
+    lambda: 'return id(learning_mode);'
+    turn_on_action:
+      - lambda: |-
+          id(learning_mode) = true;
+          id(learn_status).publish_state("Waiting for signal... Press remote now!");
+      - logger.log: "Learning mode ON - press your remote"
+    turn_off_action:
+      - lambda: |-
+          id(learning_mode) = false;
+          id(learn_status).publish_state("Learning cancelled");
+      - logger.log: "Learning mode OFF"
+
+button:
+  - platform: restart
+    name: "Restart"
+
+  - platform: template
+    name: "Learn Signal"
+    icon: "mdi:record-rec"
+    on_press:
+      - switch.turn_on: learning_mode_switch
+
+  - platform: template
+    name: "Replay Learned Signal"
+    icon: "mdi:replay"
+    on_press:
+      - lambda: |-
+          if (!id(signal_learned) || id(learned_code).empty()) {
+            ESP_LOGW("replay", "No signal learned yet!");
+            id(learn_status).publish_state("No signal to replay - learn one first!");
+            return;
+          }
+          ESP_LOGI("replay", "Replaying %d pulses...", id(learned_code).size());
+          id(learn_status).publish_state("Transmitting...");
+      - remote_transmitter.transmit_raw:
+          carrier_frequency: 0Hz
+          code: !lambda 'return id(learned_code);'
+      - lambda: |-
+          id(learn_status).publish_state("Signal transmitted!");
+          ESP_LOGI("replay", "Replay complete");
+
+  - platform: template
+    name: "Replay x3"
+    icon: "mdi:replay"
+    on_press:
+      - lambda: |-
+          if (!id(signal_learned) || id(learned_code).empty()) {
+            ESP_LOGW("replay", "No signal learned yet!");
+            return;
+          }
+      - repeat:
+          count: 3
+          then:
+            - remote_transmitter.transmit_raw:
+                carrier_frequency: 0Hz
+                code: !lambda 'return id(learned_code);'
+            - delay: 50ms
+
+  - platform: template
+    name: "Clear Learned Signal"
+    icon: "mdi:delete"
+    on_press:
+      - lambda: |-
+          id(learned_code).clear();
+          id(signal_learned) = false;
+          id(last_signal).publish_state("(empty)");
+          id(learn_status).publish_state("Signal cleared");
+          ESP_LOGI("learn", "Learned signal cleared");
+
+  - platform: template
+    name: "TX Test"
+    icon: "mdi:access-point"
+    on_press:
+      - remote_transmitter.transmit_raw:
+          carrier_frequency: 0Hz
+          code: [500, -500, 500, -500, 500, -500, 500, -500, 500, -500]
+
+  - platform: template
+    name: "Otopark:Kanat 1 Aç"
+    icon: "mdi:gate"
+    on_press:
+       - repeat:
+           count: 3
+           then:
+             - remote_transmitter.transmit_raw:
+                 carrier_frequency: 0Hz
+                 code: [1060, -444, 1059, -439, 1060, -469, 1037, -456, 1077, -443, 1056, -449, 1067, -438, 1074, -424, 466, -1039, 1076, -438, 458, -1044, 1069, -456, 438, -1058, 1081, -430, 463, -1051, 1053, -449, 451, -1065, 1062, -448, 435, -1072, 1046, -469, 1041, -447, 465, -1041, 477, -1051, 439, -1047, 468, -10000]
+             - delay: 50ms   
+
+
+  - platform: template
+    name: "Otopark:Kanat 1 açıkken kanat 2 aç"
+    icon: "mdi:gate"
+    on_press:
+      - remote_transmitter.transmit_raw:
+          carrier_frequency: 0Hz
+          code: [1079, -436, 1065, -448, 1062, -440, 1080, -445, 1041, -445, 1072, -439, 1069, -448, 1069, -438, 450, -1052, 1070, -442, 442, -1078, 1053, -436, 464, -1050, 1052, -445, 468, -1041, 1082, -448, 440, -1045, 1071, -450, 451, -1065, 1058, -444, 1060, -438, 449, -1070, 436, -1072, 444, -1045, 477, -10000]
+      - delay: 50ms
+      - remote_transmitter.transmit_raw:
+          carrier_frequency: 0Hz
+          code: [1079, -438, 1066, -431, 1061, -459, 1071, -424, 1071, -442, 1070, -430, 1086, -436, 1046, -450, 466, -1043, 1075, -426, 452, -1065, 1065, -448, 451, -1051, 1069, -440, 442, -1078, 1043, -448, 447, -1069, 1072, -440, 442, -1071, 1054, -437, 1066, -447, 457, -1043, 451, -1071, 433, -1070, 446, -10000]
+      - delay: 50ms
+      - remote_transmitter.transmit_raw:
+          carrier_frequency: 0Hz
+          code: [1076, -427, 1082, -441, 1047, -444, 1063, -469, 1046, -439, 1081, -423, 1069, -446, 1072, -451, 450, -1043, 1081, -418, 478, -1051, 1066, -424, 445, -1078, 1046, -462, 441, -1052, 1079, -440, 448, -1064, 1059, -436, 462, -1044, 1079, -434, 1064, -442, 452, -1072, 443, -1040, 464, -1051, 463, -10000]
+      - delay: 50ms
+      - remote_transmitter.transmit_raw:
+          carrier_frequency: 0Hz
+          code: [1066, -450, 1056, -447, 1067, -441, 1070, -449, 1064, -438, 1053, -458, 1059, -454, 1044, -458, 439, -1072, 1067, -424, 467, -1043, 1078, -426, 477, -1045, 1052, -442, 455, -1060, 1062, -443, 451, -1059, 1063, -443, 456, -1063, 1044, -448, 1081, -442, 445, -1044, 478, -1051, 438, -1071, 443, -10000]
+      - delay: 50ms
+      - remote_transmitter.transmit_raw:
+          carrier_frequency: 0Hz
+          code: [1067, -444, 1072, -439, 1073, -439, 1049, -449, 1059, -463, 1060, -447, 1065, -443, 1044, -445, 477, -1051, 1043, -448, 447, -1069, 1054, -438, 456, -1069, 1054, -447, 465, -1040, 1082, -427, 459, -1052, 1055, -451, 443, -1067, 1073, -425, 1080, -437, 460, -1047, 457, -1043, 451, -1070, 435, -10000]
+      - delay: 50ms
+      - remote_transmitter.transmit_raw:
+          carrier_frequency: 0Hz
+          code: [1064, -456, 1048, -450, 1048, -465, 1044, -441, 1079, -437, 1062, -449, 1081, -417, 1069, -443, 463, -1057, 1049, -444, 477, -1051, 1065, -423, 469, -1056, 1064, -438, 441, -1052, 1078, -437, 462, -1048, 1059, -464, 430, -1068, 1055, -446, 1070, -440, 441, -1079, 440, -1044, 469, -1057, 438, -10000]
+      - delay: 50ms
+      - remote_transmitter.transmit_raw:
+          carrier_frequency: 0Hz
+          code: [1096, -429, 1064, -455, 1052, -436, 1084, -424, 1074, -450, 1051, -440, 1067, -443, 1061, -464, 441, -1046, 1084, -441, 443, -1071, 1054, -437, 461, -1049, 1054, -444, 465, -1041, 1089, -441, 444, -1040, 1081, -435, 464, -1050, 1052, -444, 1068, -441, 452, -1076, 439, -1068, 448, -1054, 450, -10000]
+      - delay: 50ms
+      - remote_transmitter.transmit_raw:
+          carrier_frequency: 0Hz
+          code: [1062, -442, 1073, -427, 1067, -458, 1045, -457, 1067, -428, 1078, -439, 1072, -442, 1073, -426, 455, -1067, 1055, -443, 457, -1037, 1070, -447, 451, -1073, 1043, -443, 462, -1059, 1049, -444, 461, -1060, 1071, -447, 438, -1049, 1063, -442, 1076, -448, 438, -1071, 451, -1041, 465, -1041, 469, -10000]
+      - delay: 50ms
+      - remote_transmitter.transmit_raw:
+          carrier_frequency: 0Hz
+          code: [1078, -425, 1068, -449, 1071, -442, 1069, -438, 1060, -445, 1074, -425, 1081, -437, 1067, -443, 460, -1044, 1074, -446, 452, -1050, 1066, -425, 473, -1043, 1070, -440, 445, -1068, 1056, -445, 445, -1067, 1079, -438, 432, -1071, 1060, -439, 1076, -447, 452, -1052, 439, -1051, 468, -1041, 458, -10000]
+      - delay: 50ms
+      - remote_transmitter.transmit_raw:
+          carrier_frequency: 0Hz
+          code: [1063, -443, 1059, -462, 1059, -447, 1061, -440, 1053, -445, 1065, -457, 1071, -445, 1056, -449, 440, -1047, 1073, -451, 445, -1065, 1048, -450, 454, -1067, 1061, -446, 437, -1074, 1045, -443, 477, -1049, 1063, -426, 471, -1053, 1050, -439, 1069, -450, 451, -1048, 469, -1040, 477, -1029, 460, -10000]
+
+text_sensor:
+  - platform: template
+    name: "Last Received Signal"
+    id: last_signal
+    icon: "mdi:signal"
+
+  - platform: template
+    name: "Learn Status"
+    id: learn_status
+    icon: "mdi:information"
+
+sensor:
+  - platform: template
+    name: "Learned Signal Length"
+    id: signal_length
+    icon: "mdi:counter"
+    unit_of_measurement: "pulses"
+    lambda: 'return id(learned_code).size();'
+    update_interval: 5s
+
+binary_sensor:
+  - platform: template
+    name: "Signal Learned"
+    icon: "mdi:check-circle"
+    lambda: 'return id(signal_learned);'
+
+ 
